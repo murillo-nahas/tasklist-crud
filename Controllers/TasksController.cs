@@ -74,14 +74,19 @@ namespace taskapi.Controllers
         [HttpPost]
         public async Task<ActionResult<TaskApi.Models.Task>> PostTask(TaskApi.Models.Task task)
         {
-          if (_context.Tasks == null)
-          {
-              return Problem("Entity set 'TaskContext.Tasks'  is null.");
-          }
+            var validator = new TaskValidator();
+
+            var validationResult = validator.Validate(task);
+
+            if(!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(TaskApi.Models.Task), new { id = task.Id }, task);
+            return CreatedAtAction("GetTask", new { id = task.Id}, task);
         }
 
         [HttpDelete("{id}")]
