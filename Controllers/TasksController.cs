@@ -18,20 +18,27 @@ namespace taskapi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskApi.Models.Task>>> GetTasks()
         {
-          if (_context.Tasks == null)
-          {
-              return NotFound();
-          }
+            if (_context.Tasks == null)
+            {
+                return NotFound();
+            }
+
             return await _context.Tasks.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskApi.Models.Task>> GetTask(long id)
         {
-          if (_context.Tasks == null)
-          {
-              return NotFound();
-          }
+            if (_context.Tasks == null)
+            {
+                return NotFound();
+            }
+
+            if(id < 0)
+            {
+                return BadRequest("ID is not valid");
+            }
+
             var task = await _context.Tasks.FindAsync(id);
 
             if (task == null)
@@ -48,6 +55,11 @@ namespace taskapi.Controllers
             if (id != task.Id)
             {
                 return BadRequest();
+            }
+
+            if (!_context.Tasks.Any(t => t.Id == id))
+            {
+                return NotFound("Task not found.");
             }
 
             _context.Entry(task).State = EntityState.Modified;
@@ -96,7 +108,9 @@ namespace taskapi.Controllers
             {
                 return NotFound();
             }
+
             var task = await _context.Tasks.FindAsync(id);
+            
             if (task == null)
             {
                 return NotFound();
