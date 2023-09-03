@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using TaskApi.Models;
 
@@ -7,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<TaskContext>(opt => opt.UseInMemoryDatabase("Task"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
 
